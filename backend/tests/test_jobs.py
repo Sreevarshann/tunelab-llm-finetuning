@@ -45,3 +45,23 @@ def test_cancel_running_sets_flag(data_dir):
         s.get(Job, a.id).status = "running"
         s.commit()
     assert jobs.request_cancel(a.id).cancel_requested is True
+
+
+def test_evaluations_are_dispatched_before_queued_training(data_dir, monkeypatch):
+    ds = make_dataset()
+    train = jobs.enqueue_train(ds.id, {"iters": 5})
+    ev = jobs.enqueue_eval(ds.id, "test", None)
+    started = []
+
+    class FakeProc:
+        pid = 4242
+
+        def poll(self):
+            return 0
+
+    monkeypatch.setattr(jobs.subprocess, "Popen", lambda *a, **k: started.append(a[0][-1]) or FakeProc())
+    monkeypatch.setattr(jobs.threading, "Thread", lambda *a, **k: type("T", (), {"start": lambda self: None})())
+    assert jobs.start_next() == ev.id
+    assert started == [ev.id]
+    with session() as s:
+        assert s.get(Job, train.id).status == "queued"

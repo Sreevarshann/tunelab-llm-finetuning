@@ -9,7 +9,14 @@ def chat(i, reply=None):
 
 def test_validation_reports_line_numbers():
     with pytest.raises(ds.DatasetError) as e:
-        ds.validate_rows([chat(1), {"messages": [{"role": "user", "content": "x"}]}, {"messages": [{"role": "robot", "content": "x"}, {"role": "assistant", "content": "y"}]}, {"messages": [{"role": "user", "content": "x"}, {"role": "assistant", "content": " "}]}])
+        ds.validate_rows(
+            [
+                chat(1),
+                {"messages": [{"role": "user", "content": "x"}]},
+                {"messages": [{"role": "robot", "content": "x"}, {"role": "assistant", "content": "y"}]},
+                {"messages": [{"role": "user", "content": "x"}, {"role": "assistant", "content": " "}]},
+            ]
+        )
     assert [m.split(":")[0] for m in e.value.errors] == ["line 2", "line 3", "line 4"]
 
 

@@ -21,7 +21,7 @@ class CharTokenizer:
     def apply_chat_template(self, messages, tools=None, add_generation_prompt=False, return_dict=False, **_):
         ids = [0]
         for m in messages:
-            ids += self._encode(f"<{m['role']}>{m['content']}") + [1]
+            ids += [*self._encode(f"<{m['role']}>{m['content']}"), 1]
         if add_generation_prompt:
             ids += self._encode("<assistant>")
         return ids

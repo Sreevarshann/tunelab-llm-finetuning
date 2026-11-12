@@ -7,7 +7,7 @@ REF = '{"a": 1, "b": "x"}'
 def test_parse_accepts_plain_and_fenced_objects_only():
     assert parse_json_object('{"a": 1}') == {"a": 1}
     assert parse_json_object('```json\n{"a": 1}\n```') == {"a": 1}
-    assert parse_json_object("Sure! {\"a\": 1}") is None  # no repair of chatty output
+    assert parse_json_object('Sure! {"a": 1}') is None  # no repair of chatty output
     assert parse_json_object("[1, 2]") is None
     assert parse_json_object("not json") is None
 

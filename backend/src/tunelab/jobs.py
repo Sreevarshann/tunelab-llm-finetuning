@@ -108,7 +108,8 @@ def start_next() -> str | None:
     with session() as s:
         if s.scalars(select(Job).where(Job.status == "running")).first() is not None:
             return None
-        job = s.scalars(select(Job).where(Job.status == "queued").order_by(Job.created_at)).first()
+        # evaluations first: they are short and they are what a finished run is waiting on
+        job = s.scalars(select(Job).where(Job.status == "queued").order_by((Job.kind != "evaluate"), Job.created_at)).first()
         if job is None:
             return None
         job.status, job.started_at = "running", now()
