@@ -1,0 +1,27 @@
+# TuneLab in containers (project "tunelab", localhost-only ports). MLX uses its CPU backend in
+# Linux containers; for Metal-speed training run the API natively on macOS (see README).
+name: tunelab
+
+services:
+  api:
+    build: ./backend
+    environment:
+      TUNELAB_CORS_ORIGINS: '["http://localhost:3104"]'
+    volumes: [tunelab-data:/data]
+    ports: ["127.0.0.1:8114:8114"]
+    mem_limit: 6g
+    healthcheck: { test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8114/api/health')"], interval: 5s, retries: 30 }
+    networks: [tunelab]
+  web:
+    build: { context: ./frontend, args: { TUNELAB_API_ORIGIN: "http://api:8114" } }
+    depends_on:
+      api: { condition: service_healthy }
+    ports: ["127.0.0.1:3104:3104"]
+    mem_limit: 512m
+    networks: [tunelab]
+
+volumes:
+  tunelab-data:
+
+networks:
+  tunelab:

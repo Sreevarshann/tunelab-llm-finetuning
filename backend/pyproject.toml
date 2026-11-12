@@ -9,6 +9,7 @@ requires-python = ">=3.13"
 dependencies = [
     "fastapi>=0.162.5",
     "mlx-lm>=0.32.2",
+    "mlx[cpu]>=0.32.4 ; sys_platform == 'linux'",
     "numpy>=2.5.4",
     "pydantic>=2.14.3",
     "pydantic-settings>=2.16.2",

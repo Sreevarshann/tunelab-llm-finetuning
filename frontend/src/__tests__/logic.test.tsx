@@ -22,7 +22,7 @@ describe("summarise", () => {
     expect(a.tuned.test?.id).toBe("e1");
     expect(a.baseline.test?.id).toBe("b_new");
     expect(b.baseline.test).toBeUndefined(); // baselines are per dataset
-    expect(headline(a.tuned.test?.result && (a.tuned.test.result as { metrics: never }).metrics)).toBe(90);
+    expect(headline(a.tuned.test?.result?.metrics)).toBe(90);
   });
 
   it("uses exact match as the headline for text tasks", () => {
