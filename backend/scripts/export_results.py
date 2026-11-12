@@ -30,7 +30,9 @@ report = {
     "base_model": s.base_model,
     "base_revision": s.base_revision,
     "environment": {"machine": platform.machine(), "mac_ver": platform.mac_ver()[0], "mlx": md.version("mlx"), "mlx_lm": md.version("mlx-lm")},
-    "datasets": {d.id: {"name": d.name, "source": d.source, "synthetic": d.synthetic, "splits": {k: {"count": v["count"], "sha256": v["sha256"]} for k, v in d.splits.items()}} for d in datasets.values()},
+    "datasets": {
+        d.id: {"name": d.name, "source": d.source, "synthetic": d.synthetic, "splits": {k: {"count": v["count"], "sha256": v["sha256"]} for k, v in d.splits.items()}} for d in datasets.values()
+    },
     "baselines": {},
     "runs": [],
 }
@@ -40,21 +42,42 @@ for e in evals:
 for r in runs:
     tuned = {e.split: {"eval_id": e.id, "metrics": e.result["metrics"], "duration_s": e.result["duration_s"]} for e in evals if e.adapter_job_id == r.id}
     res = r.result or {}
-    report["runs"].append({
-        "id": r.id, "name": r.name, "status": r.status, "error": r.error, "dataset_id": r.dataset_id, "config": r.config,
-        "training": {k: res.get(k) for k in ("trainable_params", "total_params", "lora_b_norm_before", "lora_b_norm_after", "initial_val_loss", "final_val_loss", "duration_s", "peak_memory_gb", "adapter_sha256")} if res else None,
-        "evaluations": tuned,
-    })
+    report["runs"].append(
+        {
+            "id": r.id,
+            "name": r.name,
+            "status": r.status,
+            "error": r.error,
+            "dataset_id": r.dataset_id,
+            "config": r.config,
+            "training": {
+                k: res.get(k)
+                for k in ("trainable_params", "total_params", "lora_b_norm_before", "lora_b_norm_after", "initial_val_loss", "final_val_loss", "duration_s", "peak_memory_gb", "adapter_sha256")
+            }
+            if res
+            else None,
+            "evaluations": tuned,
+        }
+    )
 (out / "results.json").write_text(json.dumps(report, indent=2))
 
-head = lambda m: m.get("all_fields_correct_pct") if m else None  # noqa: E731
+
+def head(m: dict | None) -> float | None:
+    return m.get("all_fields_correct_pct") if m else None
+
+
+def cell(base: dict, run: dict, split: str) -> str:
+    if not run["evaluations"].get(split):
+        return "—"
+    return f"{head(base.get(split, {}).get('metrics'))}% → **{head(run['evaluations'][split]['metrics'])}%**"
+
+
 lines = ["| Run | Status | Steps | Rank | Train time | Val loss (start → end) | Test: base → LoRA | Held-out: base → LoRA |", "|---|---|---|---|---|---|---|---|"]
 for r in report["runs"]:
     b = report["baselines"].get(r["dataset_id"], {})
     t = r["training"] or {}
-    cell = lambda sp: f"{head(b.get(sp, {}).get('metrics'))}% → **{head(r['evaluations'].get(sp, {}).get('metrics'))}%**" if r["evaluations"].get(sp) else "—"  # noqa: E731
     vl = f"{t['initial_val_loss']:.3f} → {t['final_val_loss']:.5f}" if t else "—"
     tt = f"{t['duration_s'] / 60:.1f} min" if t else "—"
-    lines.append(f"| {r['name']} (`{r['id']}`) | {r['status']} | {r['config'].get('iters')} | {r['config'].get('rank')} | {tt} | {vl} | {cell('test')} | {cell('test_heldout')} |")
+    lines.append(f"| {r['name']} (`{r['id']}`) | {r['status']} | {r['config'].get('iters')} | {r['config'].get('rank')} | {tt} | {vl} | {cell(b, r, 'test')} | {cell(b, r, 'test_heldout')} |")
 (out / "results.md").write_text("\n".join(lines) + "\n")
 print("\n".join(lines))

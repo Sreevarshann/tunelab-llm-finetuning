@@ -47,7 +47,10 @@ jobs:
         run: npm audit --omit=dev --audit-level=high
 
   e2e:
-    name: Playwright E2E (real 10-step LoRA run on the pinned base model, MLX CPU)
+    # MLX's CPU backend is far too slow for the 4-bit 0.5B base model (4 steps did not finish in
+    # 10 minutes), so CI runs the same real jobs on a tiny random model with the base tokenizer.
+    # The pinned-model journey runs locally on Metal; see docs/TESTING.md.
+    name: Playwright E2E (real jobs on a tiny random model, MLX CPU)
     runs-on: ubuntu-latest
     needs: [backend, frontend]
     timeout-minutes: 60
@@ -59,15 +62,18 @@ jobs:
         with: { node-version: 24 }
       - run: uv sync --frozen
         working-directory: backend
-      - name: Download pinned base model
+      - name: Build tiny random model (base tokenizer)
         working-directory: backend
-        run: uv run python -c "from huggingface_hub import snapshot_download as d; d('mlx-community/Qwen2.5-0.5B-Instruct-4bit', revision='a5339a4131f135d0fdc6a5c8b5bbed2753bbe0f3')"
+        run: uv run python scripts/make_tiny_model.py "$RUNNER_TEMP/tiny-model"
       - run: npm ci
         working-directory: frontend
       - run: npx playwright install --with-deps chromium
         working-directory: frontend
       - run: npx playwright test
         working-directory: frontend
+        env:
+          TUNELAB_BASE_MODEL: ${{ runner.temp }}/tiny-model
+          TUNELAB_BASE_REVISION: ""
       - if: failure()
         uses: actions/upload-artifact@v4
         with: { name: playwright-report, path: frontend/playwright-report, retention-days: 7 }
