@@ -116,6 +116,8 @@ export function PageHeader({ title, subtitle, actions }: { title: string; subtit
   );
 }
 
+/** Losses span 1 to 1e-5 after fitting; small values keep two significant digits. */
+export const fmtLoss = (v: number | null | undefined) => (v == null ? "—" : v >= 0.001 ? v.toFixed(3) : v.toExponential(1));
 export const fmtPct = (v: number | null | undefined, digits = 1) => (v == null ? "—" : `${v.toFixed(digits)}%`);
 export const fmtNum = (v: number | null | undefined) => (v == null ? "—" : v.toLocaleString());
 export const fmtSec = (s: number | null | undefined) => (s == null ? "—" : s < 90 ? `${s.toFixed(0)} s` : `${(s / 60).toFixed(1)} min`);

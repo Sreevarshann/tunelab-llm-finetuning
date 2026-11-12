@@ -11,7 +11,7 @@ import { isJson } from "@/lib/types";
 import { splitLabel } from "./Datasets";
 import { Plot, usePalette } from "./Plot";
 import { StatusBadge } from "./Status";
-import { Button, Card, Chip, ErrorNote, fmtDate, fmtNum, fmtPct, fmtSec, PageHeader, Skeleton } from "./ui";
+import { Button, Card, Chip, ErrorNote, fmtDate, fmtLoss, fmtNum, fmtPct, fmtSec, PageHeader, Skeleton } from "./ui";
 
 interface Live { stage?: string; train: (CurvePoint & { tokens_per_second?: number })[]; val: CurvePoint[] }
 
@@ -60,7 +60,7 @@ function Verification({ run }: { run: RunT }) {
   const rows: Record<string, React.ReactNode> = {
     "Trainable parameters": <>{fmtNum(r.trainable_params)} <span className="text-muted">of {fmtNum(r.total_params)} ({((100 * r.trainable_params) / r.total_params).toFixed(2)}%)</span></>,
     "LoRA B norm": <>{r.lora_b_norm_before.toFixed(3)} → <span className="font-medium text-tuned">{r.lora_b_norm_after.toFixed(3)}</span> <span className="text-muted">(starts at 0: weights were updated)</span></>,
-    "Validation loss": <>{r.initial_val_loss.toFixed(4)} → <span className="font-medium text-tuned">{r.final_val_loss.toFixed(4)}</span></>,
+    "Validation loss": <>{fmtLoss(r.initial_val_loss)} → <span className="font-medium text-tuned">{fmtLoss(r.final_val_loss)}</span></>,
     "Adapter SHA-256": <span className="break-all font-mono text-[11px]">{r.adapter_sha256}</span>,
     "Training time · peak memory": <>{fmtSec(r.duration_s)} · {r.peak_memory_gb} GB</>,
     "Throughput": <>{r.train_curve.length ? Math.round(r.train_curve.reduce((a, p) => a + p.tokens_per_second, 0) / r.train_curve.length) : "—"} tokens/s (mean of reports)</>,
@@ -113,7 +113,7 @@ function SplitComparison({ split, base, tuned, mode }: { split: string; base?: E
                 <tr><td className="py-1.5">Token F1</td><td>{cell(bm && !isJson(bm) ? bm.token_f1_pct : undefined)}</td><td>{cell(tm && !isJson(tm) ? tm.token_f1_pct : undefined)}</td><td /></tr>
               </>
             )}
-            <tr><td className="py-1.5">Test loss</td><td>{bm?.loss?.toFixed(4) ?? "—"}</td><td>{tm?.loss?.toFixed(4) ?? "—"}</td><td /></tr>
+            <tr><td className="py-1.5">Test loss</td><td>{fmtLoss(bm?.loss)}</td><td>{fmtLoss(tm?.loss)}</td><td /></tr>
           </tbody>
         </table>
       </div>

@@ -99,9 +99,9 @@ def _job_out(j: Job) -> dict:
         "split": j.split,
         "adapter_job_id": j.adapter_job_id,
         "progress": j.progress,
-        "created_at": j.created_at,
-        "started_at": j.started_at,
-        "finished_at": j.finished_at,
+        "created_at": iso(j.created_at),
+        "started_at": iso(j.started_at),
+        "finished_at": iso(j.finished_at),
     }
 
 

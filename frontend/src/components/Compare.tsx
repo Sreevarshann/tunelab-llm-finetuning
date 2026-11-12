@@ -7,7 +7,7 @@ import { api } from "@/lib/api";
 import { configSummary, headline, summarise } from "@/lib/summary";
 import { splitLabel } from "./Datasets";
 import { Plot, usePalette } from "./Plot";
-import { Card, Empty, fmtPct, fmtSec, PageHeader, Skeleton } from "./ui";
+import { Card, Empty, fmtLoss, fmtPct, fmtSec, PageHeader, Skeleton } from "./ui";
 
 export function Compare() {
   const c = usePalette();
@@ -44,7 +44,7 @@ export function Compare() {
                 {sel.map(({ run, tuned, baseline }) => (
                   <tr key={run.id}>
                     <td className="px-4 py-2"><Link href={`/runs/${run.id}`} className="font-medium hover:underline">{run.name || run.id}</Link><div className="font-mono text-[11px] text-muted">{configSummary(run.config)}</div></td>
-                    <td>{run.result?.final_val_loss.toExponential(2)}</td>
+                    <td>{fmtLoss(run.result?.final_val_loss)}</td>
                     <td>{fmtSec(run.result?.duration_s)}</td>
                     {splits.map((s) => <td key={s}>{fmtPct(headline(baseline[s]?.result?.metrics))} → <span className="font-medium text-tuned">{fmtPct(headline(tuned[s]?.result?.metrics))}</span></td>)}
                   </tr>

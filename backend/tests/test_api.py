@@ -86,3 +86,19 @@ def test_playground_rejects_unfinished_runs(client):
 def test_compare_input_is_validated(client):
     assert client.get("/api/compare", params={"run_ids": "a;drop"}).status_code == 422
     assert client.get("/api/compare", params={"run_ids": "run_missing"}).status_code == 404
+
+
+def test_timestamps_are_utc_with_offset(client):
+    d = synthetic(client)
+    run = client.post("/api/runs", json={"dataset_id": d["id"]}).json()
+    assert d["created_at"].endswith("+00:00") and run["created_at"].endswith("+00:00")
+    client.post(f"/api/runs/{run['id']}/cancel")
+    events = client.get(f"/api/jobs/{run['id']}/events").text
+    assert "+00:00" in events
+
+
+def test_empty_base_revision_means_none(monkeypatch):
+    from tunelab.config import Settings
+
+    monkeypatch.setenv("TUNELAB_BASE_REVISION", "")
+    assert Settings().base_revision is None

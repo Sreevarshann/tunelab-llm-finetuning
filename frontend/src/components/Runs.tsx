@@ -6,7 +6,7 @@ import Link from "next/link";
 import { api } from "@/lib/api";
 import { configSummary, headline, summarise } from "@/lib/summary";
 import { StatusBadge } from "./Status";
-import { Button, Card, Empty, ErrorNote, fmtPct, fmtSec, PageHeader, relTime, Skeleton } from "./ui";
+import { Button, Card, Empty, ErrorNote, fmtLoss, fmtPct, fmtSec, PageHeader, relTime, Skeleton } from "./ui";
 
 function Delta({ base, tuned }: { base: number | null; tuned: number | null }) {
   if (tuned == null) return <span className="text-muted">—</span>;
@@ -46,7 +46,7 @@ export function RunsOverview() {
                     <div className="text-[11px] text-muted">{name(run.dataset_id)} · {relTime(run.created_at)}{run.result ? ` · ${fmtSec(run.result.duration_s)}` : ""}</div>
                   </td>
                   <td><StatusBadge status={run.status} progress={run.progress} /></td>
-                  <td className="tabular text-xs">{run.result ? <>{run.result.initial_val_loss.toFixed(3)} → <span className="font-medium text-tuned">{run.result.final_val_loss.toFixed(3)}</span></> : "—"}</td>
+                  <td className="tabular text-xs">{run.result ? <>{fmtLoss(run.result.initial_val_loss)} → <span className="font-medium text-tuned">{fmtLoss(run.result.final_val_loss)}</span></> : "—"}</td>
                   <td><Delta base={headline(baseline.test?.result?.metrics)} tuned={headline(tuned.test?.result?.metrics)} /></td>
                   <td className="pr-4"><Delta base={headline(baseline.test_heldout?.result?.metrics)} tuned={headline(tuned.test_heldout?.result?.metrics)} /></td>
                 </tr>
