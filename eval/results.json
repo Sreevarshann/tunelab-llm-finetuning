@@ -1,0 +1,310 @@
+{
+  "base_model": "mlx-community/Qwen2.5-0.5B-Instruct-4bit",
+  "base_revision": "a5339a4131f135d0fdc6a5c8b5bbed2753bbe0f3",
+  "environment": {
+    "machine": "arm64",
+    "mac_ver": "26.6.2",
+    "mlx": "0.32.4",
+    "mlx_lm": "0.32.2"
+  },
+  "datasets": {
+    "ds_3c2284b91191": {
+      "name": "Support ticket triage (synthetic)",
+      "source": "synthetic generator tasks/ticket_triage.py, seed=7; test_heldout uses only template phrasings unseen in training",
+      "synthetic": true,
+      "splits": {
+        "train": {
+          "count": 600,
+          "sha256": "b9d6302845691eb5cb22a0af8d6fe327b53656f7f6b6c9a8197b2fcd01784465"
+        },
+        "valid": {
+          "count": 80,
+          "sha256": "20b538ae242abab390a7c5029e40e42ae33c24eb681c720c6babaf9c008a48f8"
+        },
+        "test": {
+          "count": 120,
+          "sha256": "9d57ff858b27bf985dcc21841083b567db5443b2489ded0d3ef95e761d0f429c"
+        },
+        "test_heldout": {
+          "count": 120,
+          "sha256": "ffdf57ce82f087b6e004df2e2ec2d1cb12cae0058605ffdaf4820d392ee9d8da"
+        }
+      }
+    }
+  },
+  "baselines": {
+    "ds_3c2284b91191": {
+      "test": {
+        "eval_id": "eval_a72f593b8db6",
+        "metrics": {
+          "n": 120,
+          "json_valid_pct": 100.0,
+          "schema_exact_pct": 100.0,
+          "all_fields_correct_pct": 8.3,
+          "field_accuracy_pct": {
+            "category": 29.2,
+            "priority": 35.0,
+            "product": 100.0,
+            "order_id": 95.8,
+            "refund_requested": 66.7
+          },
+          "loss": 1.1387
+        },
+        "duration_s": 45.2
+      },
+      "test_heldout": {
+        "eval_id": "eval_89d0853209be",
+        "metrics": {
+          "n": 120,
+          "json_valid_pct": 100.0,
+          "schema_exact_pct": 100.0,
+          "all_fields_correct_pct": 5.0,
+          "field_accuracy_pct": {
+            "category": 30.8,
+            "priority": 46.7,
+            "product": 100.0,
+            "order_id": 98.3,
+            "refund_requested": 55.8
+          },
+          "loss": 1.1163
+        },
+        "duration_s": 35.8
+      }
+    }
+  },
+  "runs": [
+    {
+      "id": "run_afb78b8ed7ee",
+      "name": "r8 \u00b7 lr1e-4 \u00b7 300 steps",
+      "status": "completed",
+      "error": null,
+      "dataset_id": "ds_3c2284b91191",
+      "config": {
+        "rank": 8,
+        "scale": 20.0,
+        "dropout": 0.0,
+        "num_layers": 16,
+        "learning_rate": 0.0001,
+        "iters": 300,
+        "batch_size": 4,
+        "max_seq_length": 512,
+        "steps_per_report": 10,
+        "steps_per_eval": 50,
+        "seed": 0,
+        "mask_prompt": true
+      },
+      "training": {
+        "trainable_params": 2932736,
+        "total_params": 494032768,
+        "lora_b_norm_before": 0.0,
+        "lora_b_norm_after": 4.580911627511548,
+        "initial_val_loss": 1.1259366273880005,
+        "final_val_loss": 7.296901458175853e-05,
+        "duration_s": 584.4,
+        "peak_memory_gb": 2.8,
+        "adapter_sha256": "57a04f50c752a3390602fb92c6b1da526b088c7c7871f409f1c4d690ae6d3e26"
+      },
+      "evaluations": {
+        "test": {
+          "eval_id": "eval_239b09a1687a",
+          "metrics": {
+            "n": 120,
+            "json_valid_pct": 100.0,
+            "schema_exact_pct": 100.0,
+            "all_fields_correct_pct": 100.0,
+            "field_accuracy_pct": {
+              "category": 100.0,
+              "priority": 100.0,
+              "product": 100.0,
+              "order_id": 100.0,
+              "refund_requested": 100.0
+            },
+            "loss": 0.0001
+          },
+          "duration_s": 49.1
+        },
+        "test_heldout": {
+          "eval_id": "eval_1ec29b476c07",
+          "metrics": {
+            "n": 120,
+            "json_valid_pct": 100.0,
+            "schema_exact_pct": 100.0,
+            "all_fields_correct_pct": 63.3,
+            "field_accuracy_pct": {
+              "category": 94.2,
+              "priority": 69.2,
+              "product": 100.0,
+              "order_id": 100.0,
+              "refund_requested": 100.0
+            },
+            "loss": 0.042
+          },
+          "duration_s": 44.1
+        }
+      }
+    },
+    {
+      "id": "run_4b5d00e6071a",
+      "name": "Short \u00b7 100 steps",
+      "status": "completed",
+      "error": null,
+      "dataset_id": "ds_3c2284b91191",
+      "config": {
+        "rank": 8,
+        "scale": 20.0,
+        "dropout": 0.0,
+        "num_layers": 16,
+        "learning_rate": 0.0001,
+        "iters": 100,
+        "batch_size": 4,
+        "max_seq_length": 512,
+        "steps_per_report": 10,
+        "steps_per_eval": 25,
+        "seed": 0,
+        "mask_prompt": true
+      },
+      "training": {
+        "trainable_params": 2932736,
+        "total_params": 494032768,
+        "lora_b_norm_before": 0.0,
+        "lora_b_norm_after": 4.651477216047521,
+        "initial_val_loss": 1.1259366273880005,
+        "final_val_loss": 0.0004265524912625551,
+        "duration_s": 265.9,
+        "peak_memory_gb": 2.8,
+        "adapter_sha256": "d0bf5ebc2d59e88eb28151e0fb3034f3a71ece823630e9ef12aaf736a1202afd"
+      },
+      "evaluations": {
+        "test": {
+          "eval_id": "eval_28f9ba1e46a6",
+          "metrics": {
+            "n": 120,
+            "json_valid_pct": 100.0,
+            "schema_exact_pct": 100.0,
+            "all_fields_correct_pct": 100.0,
+            "field_accuracy_pct": {
+              "category": 100.0,
+              "priority": 100.0,
+              "product": 100.0,
+              "order_id": 100.0,
+              "refund_requested": 100.0
+            },
+            "loss": 0.0004
+          },
+          "duration_s": 52.1
+        },
+        "test_heldout": {
+          "eval_id": "eval_3ec10b409fbe",
+          "metrics": {
+            "n": 120,
+            "json_valid_pct": 100.0,
+            "schema_exact_pct": 100.0,
+            "all_fields_correct_pct": 50.0,
+            "field_accuracy_pct": {
+              "category": 100.0,
+              "priority": 50.0,
+              "product": 100.0,
+              "order_id": 100.0,
+              "refund_requested": 100.0
+            },
+            "loss": 0.0517
+          },
+          "duration_s": 45.5
+        }
+      }
+    },
+    {
+      "id": "run_4f92a7e9a3a3",
+      "name": "r16 \u00b7 dropout 0.1 \u00b7 300 steps",
+      "status": "failed",
+      "error": "worker exited with code -15",
+      "dataset_id": "ds_3c2284b91191",
+      "config": {
+        "rank": 16,
+        "scale": 20.0,
+        "dropout": 0.1,
+        "num_layers": 16,
+        "learning_rate": 0.0001,
+        "iters": 300,
+        "batch_size": 4,
+        "max_seq_length": 512,
+        "steps_per_report": 10,
+        "steps_per_eval": 50,
+        "seed": 0,
+        "mask_prompt": true
+      },
+      "training": null,
+      "evaluations": {}
+    },
+    {
+      "id": "run_319cfabbdfcc",
+      "name": "r16 \u00b7 dropout 0.1 \u00b7 300 steps",
+      "status": "completed",
+      "error": null,
+      "dataset_id": "ds_3c2284b91191",
+      "config": {
+        "rank": 16,
+        "scale": 20.0,
+        "dropout": 0.1,
+        "num_layers": 16,
+        "learning_rate": 0.0001,
+        "iters": 300,
+        "batch_size": 4,
+        "max_seq_length": 512,
+        "steps_per_report": 10,
+        "steps_per_eval": 50,
+        "seed": 0,
+        "mask_prompt": true
+      },
+      "training": {
+        "trainable_params": 5865472,
+        "total_params": 494032768,
+        "lora_b_norm_before": 0.0,
+        "lora_b_norm_after": 7.653501514437772,
+        "initial_val_loss": 1.125936508178711,
+        "final_val_loss": 0.0012967317597940564,
+        "duration_s": 606.5,
+        "peak_memory_gb": 3.36,
+        "adapter_sha256": "7961b5782d580c5dc4006654461dd4cb28d7a37a4529e7e9629e61b72fb8f460"
+      },
+      "evaluations": {
+        "test": {
+          "eval_id": "eval_49145e08886c",
+          "metrics": {
+            "n": 120,
+            "json_valid_pct": 100.0,
+            "schema_exact_pct": 100.0,
+            "all_fields_correct_pct": 99.2,
+            "field_accuracy_pct": {
+              "category": 100.0,
+              "priority": 100.0,
+              "product": 100.0,
+              "order_id": 99.2,
+              "refund_requested": 100.0
+            },
+            "loss": 0.0013
+          },
+          "duration_s": 50.4
+        },
+        "test_heldout": {
+          "eval_id": "eval_6f83ce61c31a",
+          "metrics": {
+            "n": 120,
+            "json_valid_pct": 100.0,
+            "schema_exact_pct": 100.0,
+            "all_fields_correct_pct": 40.0,
+            "field_accuracy_pct": {
+              "category": 100.0,
+              "priority": 40.0,
+              "product": 100.0,
+              "order_id": 99.2,
+              "refund_requested": 100.0
+            },
+            "loss": 0.0829
+          },
+          "duration_s": 48.6
+        }
+      }
+    }
+  ]
+}
